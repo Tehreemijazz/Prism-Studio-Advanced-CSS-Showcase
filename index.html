@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+  <title>
+   Prism Studio &ndash; Advanced CSS Showcase
+  </title>
+  <style>
+   
+@property --ang {
+    syntax:"<angle>";
+    inherits:false;
+    initial-value:0deg
+}
+:root {
+    --bg:#0b0b1a;
+    --fg:#f2f2ff;
+    --muted:#b4b4d6;
+    --card:rgba(255,255,255,.08);
+    --line:rgba(255,255,255,.18);
+    --a:#7c5cff;
+    --b:#00e0c6;
+    --c:#ff5ca8;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    color-scheme:dark
+}
+@media (prefers-color-scheme:light) {
+    :root:not([data-theme="dark"]) {
+        --bg:#f4f4ff;
+        --fg:#14142b;
+        --muted:#4a4a6e;
+        --card:rgba(255,255,255,.7);
+        --line:rgba(20,20,43,.18);
+        --a:#5a3df0;
+        --b:#008c7c;
+        --c:#d0307f;
+        color-scheme:light
+    }
+}
+:root[data-theme="light"] {
+    --bg:#f4f4ff;
+    --fg:#14142b;
+    --muted:#4a4a6e;
+    --card:rgba(255,255,255,.7);
+    --line:rgba(20,20,43,.18);
+    --a:#5a3df0;
+    --b:#008c7c;
+    --c:#d0307f;
+    color-scheme:light
+}
+*,*::before,*::after {
+    box-sizing:inherit
+}
+html {
+    scroll-behavior:smooth;
+    scroll-padding-top:calc(72px + env(safe-area-inset-top,0px))
+}
+body {
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    overflow-x:hidden
+}
+a {
+    color:inherit
+}
+:focus-visible {
+    outline:3px solid var(--b);
+    outline-offset:3px;
+    border-radius:6px
+}
+section {
+    padding:96px 5vw;
+    position:relative
+}
+h2 {
+    font-size:clamp(1.8rem,4vw,2.8rem);
+    margin:0 0 8px;
+    line-height:1.15
+}
+.lead {
+    color:var(--muted);
+    max-width:60ch;
+    margin:0 0 40px
+}
+.wrap {
+    max-width:1100px;
+    margin:auto
+}
+.grad-text {
+    background:linear-gradient(90deg,var(--a),var(--b),var(--c),var(--a));
+    background-size:300% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation:shift 8s linear infinite
+}
+@keyframes shift {
+    to {
+        background-position:300% 0
+    }
+}
+/* progress */
+.bar {
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    height:4px;
+    z-index:100;
+    background:linear-gradient(90deg,var(--a),var(--b),var(--c));
+    transform-origin:0 50%;
+    transform:scaleX(var(--p,0))
+}
+@supports (animation-timeline:scroll()) {
+    .bar {
+        animation:grow linear both;
+        animation-timeline:scroll(root)
+    }
+    @keyframes grow {
+        from {
+            transform:scaleX(0)
+        }
+        to {
+            transform:scaleX(1)
+        }
+    }
+}
+/* nav */
+header {
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:90;
+    padding-top:env(safe-area-inset-top,0px);
+    background:color-mix(in srgb,var(--bg) 55%,transparent);
+    -webkit-backdrop-filter:blur(14px) saturate(1.4);
+    backdrop-filter:blur(14px) saturate(1.4);
+    border-bottom:1px solid var(--line)
+}
+.nav {
+    max-width:1100px;
+    margin:auto;
+    height:64px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 5vw
+}
+.logo {
+    font-weight:800;
+    letter-spacing:.5px;
+    text-decoration:none
+}
+nav ul {
+    display:flex;
+    gap:6px;
+    list-style:none;
+    margin:0;
+    padding:0;
+    align-items:center
+}
+nav a,.dd>button {
+    position:relative;
+    display:block;
+    padding:8px 14px;
+    text-decoration:none;
+    background:none;
+    border:0;
+    color:inherit;
+    font:inherit;
+    cursor:pointer;
+    border-radius:8px
+}
+nav a::after,.dd>button::after {
+    content:"";
+    position:absolute;
+    left:14px;
+    right:14px;
+    bottom:2px;
+    height:2px;
+    background:linear-gradient(90deg,var(--a),var(--b));
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform .3s
+}
+nav a:hover::after,nav a:focus-visible::after,.dd>button:hover::after,.dd:focus-within>button::after {
+    transform:scaleX(1)
+}
+.dd {
+    position:relative
+}
+.menu {
+    position:absolute;
+    top:100%;
+    right:0;
+    min-width:180px;
+    padding:8px;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:12px;
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(-8px);
+    transition:opacity .25s,transform .25s,visibility .25s
+}
+.dd:hover .menu,.dd:focus-within .menu,.dd.open .menu {
+    opacity:1;
+    visibility:visible;
+    transform:none
+}
+.burger {
+    display:none;
+    background:none;
+    border:1px solid var(--line);
+    color:inherit;
+    border-radius:8px;
+    padding:8px 12px;
+    font:inherit;
+    cursor:pointer
+}
+@media (max-width:760px) {
+    .burger {
+        display:block
+    }
+    nav ul {
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        flex-direction:column;
+        align-items:stretch;
+        background:var(--bg);
+        padding:10px 5vw 16px;
+        border-bottom:1px solid var(--line);
+        clip-path:inset(0 0 100% 0);
+        transition:clip-path .35s;
+        visibility:hidden
+    }
+    nav.open ul {
+        clip-path:inset(0);
+        visibility:visible
+    }
+    .menu {
+        position:static;
+        opacity:1;
+        visibility:visible;
+        transform:none;
+        border:0;
+        padding-left:14px
+    }
+}
+/* buttons */
+.btn {
+    position:relative;
+    display:inline-block;
+    padding:14px 28px;
+    border-radius:999px;
+    border:0;
+    font:600 1rem system-ui;
+    color:#fff;
+    text-decoration:none;
+    cursor:pointer;
+    background:linear-gradient(120deg,var(--a),var(--c));
+    transition:transform .25s,box-shadow .25s;
+    overflow:hidden
+}
+.btn:hover {
+    transform:translateY(-3px) scale(1.03);
+    box-shadow:0 12px 28px -8px var(--a)
+}
+.btn:active {
+    transform:scale(.97)
+}
+.btn.ghost {
+    background:var(--card);
+    border:1px solid var(--line);
+    color:var(--fg)
+}
+.btn::before {
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);
+    transform:translateX(-120%);
+    transition:transform .6s
+}
+.btn:hover::before {
+    transform:translateX(120%)
+}
+/* hero */
+.hero {
+    min-height:100svh;
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:40px;
+    align-items:center;
+    padding-top:120px;
+    overflow:hidden;
+    isolation:isolate
+}
+.hero::before {
+    content:"";
+    position:absolute;
+    inset:-30%;
+    z-index:-2;
+    background:conic-gradient(from var(--ang) at 50% 50%,#7c5cff55,#00e0c655,#ff5ca855,#7c5cff55);
+    filter:blur(60px);
+    animation:spin 18s linear infinite
+}
+@keyframes spin {
+    to {
+        --ang:360deg
+    }
+}
+.hero::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:-1;
+    background:radial-gradient(circle at 20% 20%,transparent 0,var(--bg) 75%),repeating-linear-gradient(0deg,transparent 0 39px,var(--line) 39px 40px);
+    opacity:.55
+}
+.blob {
+    position:absolute;
+    z-index:-1;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--b),var(--a));
+    opacity:.5;
+    animation:float 9s ease-in-out infinite alternate
+}
+.blob.b1 {
+    width:160px;
+    height:160px;
+    top:14%;
+    left:6%
+}
+.blob.b2 {
+    width:90px;
+    height:90px;
+    bottom:12%;
+    left:46%;
+    animation-delay:-3s;
+    background:linear-gradient(135deg,var(--c),var(--a))
+}
+@keyframes float {
+    from {
+        transform:translate3d(0,0,0) rotate(0)
+    }
+    to {
+        transform:translate3d(30px,-40px,0) rotate(40deg)
+    }
+}
+.hero h1 {
+    font-size:clamp(2.4rem,6.5vw,5rem);
+    line-height:1.05;
+    margin:0 0 20px
+}
+.hero h1 span {
+    display:inline-block;
+    opacity:0;
+    transform:translateY(40px) rotateX(-60deg);
+    animation:rise .8s cubic-bezier(.2,.8,.2,1) forwards;
+    animation-delay:calc(var(--i)*120ms)
+}
+@keyframes rise {
+    to {
+        opacity:1;
+        transform:none
+    }
+}
+.hero p {
+    color:var(--muted);
+    font-size:1.15rem;
+    max-width:46ch
+}
+.cta {
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-top:28px
+}
+.orb {
+    perspective:900px;
+    justify-self:center;
+    width:min(380px,80vw);
+    aspect-ratio:1
+}
+.orb svg {
+    width:100%;
+    height:100%;
+    animation:bob 6s ease-in-out infinite;
+    transform-style:preserve-3d
+}
+@keyframes bob {
+    0%,100% {
+        transform:rotateY(-14deg) rotateX(6deg) translateY(0)
+    }
+    50% {
+        transform:rotateY(14deg) rotateX(-4deg) translateY(-18px)
+    }
+}
+@media (max-width:860px) {
+    .hero {
+        grid-template-columns:1fr;
+        text-align:center
+    }
+    .hero p {
+        margin:auto
+    }
+    .cta {
+        justify-content:center
+    }
+}
+/* art tiles (no image assets) */
+.art {
+    position:absolute;
+    inset:0;
+    transition:transform .6s cubic-bezier(.2,.8,.2,1);
+    background:
+    radial-gradient(circle at 70% 25%,hsl(calc(var(--h) + 60) 90% 70%) 0 14%,transparent 15%),
+    conic-gradient(from 200deg at 30% 80%,hsl(var(--h) 80% 55%),hsl(calc(var(--h) + 80) 80% 45%),hsl(var(--h) 80% 55%))
+}
+.art::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    background:repeating-linear-gradient(45deg,transparent 0 14px,rgba(255,255,255,.1) 14px 16px)
+}
+/* products */
+.grid3 {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:28px;
+    perspective:1100px
+}
+.card3d {
+    --rx:0deg;
+    --ry:0deg;
+    --s:1;
+    position:relative;
+    border-radius:20px;
+    background:var(--card);
+    border:1px solid var(--line);
+    transform-style:preserve-3d;
+    transform:rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--s));
+    transition:transform .25s ease-out,box-shadow .3s;
+    will-change:transform
+}
+.card3d:hover,.card3d:focus-within {
+    --s:1.04;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.5)
+}
+.card3d .pic {
+    position:relative;
+    height:200px;
+    border-radius:20px 20px 0 0;
+    overflow:hidden;
+    transform:translateZ(30px)
+}
+.card3d:hover .art {
+    transform:scale(1.18) rotate(2deg)
+}
+.card3d .body {
+    padding:20px;
+    transform:translateZ(50px)
+}
+.card3d h3 {
+    margin:0 0 6px
+}
+.card3d p {
+    margin:0 0 14px;
+    color:var(--muted)
+}
+.price {
+    font-weight:800;
+    font-size:1.3rem
+}
+.card3d .tag {
+    position:absolute;
+    top:14px;
+    right:14px;
+    z-index:2;
+    padding:4px 12px;
+    border-radius:99px;
+    background:var(--bg);
+    font-size:.8rem;
+    transform:translateZ(70px);
+    border:1px solid var(--line)
+}
+/* effects */
+.fx {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:24px
+}
+.fx>div {
+    min-height:220px;
+    border-radius:20px;
+    padding:24px;
+    position:relative;
+    overflow:hidden
+}
+.fx h3 {
+    margin:0 0 6px
+}
+.fx p {
+    margin:0;
+    font-size:.95rem
+}
+.glass {
+    background:linear-gradient(135deg,var(--a),var(--c))
+}
+.glass::before {
+    content:"";
+    position:absolute;
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    background:var(--b);
+    right:-30px;
+    top:-30px;
+    animation:float 7s ease-in-out infinite alternate
+}
+.glass .pane {
+    position:absolute;
+    inset:auto 16px 16px;
+    padding:16px;
+    border-radius:14px;
+    background:rgba(255,255,255,.18);
+    -webkit-backdrop-filter:blur(12px);
+    backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.4);
+    color:#fff
+}
+.clip {
+    background:linear-gradient(160deg,var(--b),var(--a));
+    clip-path:polygon(0 0,100% 0,100% 80%,60% 100%,0 80%);
+    color:#06061a
+}
+.clip h3,.clip p {
+    color:#06061a
+}
+.mask {
+    background:linear-gradient(90deg,var(--c),var(--a),var(--b));
+    -webkit-mask:radial-gradient(circle at 50% 50%,#000 38%,transparent 39%) 0 0/60px 60px;
+    mask:radial-gradient(circle at 50% 50%,#000 38%,transparent 39%) 0 0/60px 60px;
+    min-height:220px
+}
+.blend {
+    background:linear-gradient(120deg,#ff5ca8,#ffd34d),repeating-linear-gradient(90deg,#222 0 12px,#eee 12px 24px);
+    background-blend-mode:multiply;
+    isolation:isolate;
+    color:#fff
+}
+.blend h3 {
+    mix-blend-mode:difference;
+    font-size:2rem
+}
+.border {
+    background:var(--bg);
+    border:3px solid transparent;
+    background:linear-gradient(var(--bg),var(--bg)) padding-box,conic-gradient(from var(--ang),var(--a),var(--b),var(--c),var(--a)) border-box;
+    animation:spin 5s linear infinite
+}
+.fx-lbl {
+    display:block;
+    font-size:.75rem;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    opacity:.8;
+    margin-bottom:8px
+}
+/* parallax */
+.px {
+    height:70vh;
+    min-height:420px;
+    overflow:hidden;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(180deg,var(--bg),color-mix(in srgb,var(--a) 35%,var(--bg)));
+    isolation:isolate
+}
+.px i {
+    position:absolute;
+    border-radius:50%;
+    z-index:-1
+}
+.px .l1 {
+    width:46vmin;
+    height:46vmin;
+    left:8%;
+    top:6%;
+    background:radial-gradient(circle,var(--c),transparent 70%);
+    --k:-60px
+}
+.px .l2 {
+    width:30vmin;
+    height:30vmin;
+    right:12%;
+    top:30%;
+    background:radial-gradient(circle,var(--b),transparent 70%);
+    --k:-140px
+}
+.px .l3 {
+    width:16vmin;
+    height:16vmin;
+    left:48%;
+    bottom:8%;
+    background:radial-gradient(circle,var(--a),transparent 70%);
+    --k:-260px
+}
+.px h2 {
+    text-align:center;
+    position:relative;
+    z-index:2
+}
+.px i {
+    transform:translate3d(0,calc(var(--sy,0)*var(--kf,0)*1px),0)
+}
+.l1 {
+    --kf:-.1
+}
+.l2 {
+    --kf:-.25
+}
+.l3 {
+    --kf:-.45
+}
+@supports (animation-timeline:view()) {
+    .px i {
+        transform:none;
+        animation:par linear both;
+        animation-timeline:view()
+    }
+    @keyframes par {
+        from {
+            transform:translateY(calc(var(--k)*-1))
+        }
+        to {
+            transform:translateY(var(--k))
+        }
+    }
+}
+/* gallery */
+.filters {
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:28px
+}
+.chip {
+    padding:8px 18px;
+    border-radius:99px;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:inherit;
+    font:inherit;
+    cursor:pointer;
+    transition:background .25s,transform .25s
+}
+.chip:hover {
+    transform:translateY(-2px)
+}
+.chip[aria-pressed="true"] {
+    background:linear-gradient(120deg,var(--a),var(--c));
+    color:#fff;
+    border-color:transparent
+}
+.gallery {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:22px
+}
+.work {
+    all:unset;
+    display:block;
+    position:relative;
+    aspect-ratio:4/3;
+    border-radius:18px;
+    overflow:hidden;
+    cursor:pointer;
+    color:#fff;
+    box-sizing:border-box
+}
+.work:focus-visible {
+    outline:3px solid var(--b);
+    outline-offset:3px
+}
+.work[hidden] {
+    display:none
+}
+.work .cap {
+    position:absolute;
+    inset:auto 0 0;
+    padding:18px;
+    background:linear-gradient(transparent,rgba(0,0,0,.85));
+    transform:translateY(55%);
+    transition:transform .4s cubic-bezier(.2,.8,.2,1)
+}
+.work:hover .cap,.work:focus-visible .cap {
+    transform:none
+}
+.work:hover .art,.work:focus-visible .art {
+    transform:scale(1.12)
+}
+.work small {
+    color:#7ff;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.08em
+}
+.work b {
+    display:block;
+    font-size:1.15rem
+}
+.work span.d {
+    display:block;
+    font-size:.9rem;
+    opacity:.9;
+    margin-top:4px
+}
+dialog {
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:var(--bg);
+    color:var(--fg);
+    padding:0;
+    width:min(560px,92vw);
+    overflow:hidden
+}
+dialog::backdrop {
+    background:rgba(0,0,0,.6);
+    -webkit-backdrop-filter:blur(6px);
+    backdrop-filter:blur(6px)
+}
+dialog[open] {
+    animation:pop .35s cubic-bezier(.2,.8,.2,1)
+}
+@keyframes pop {
+    from {
+        opacity:0;
+        transform:scale(.9) translateY(20px)
+    }
+}
+dialog .pic {
+    position:relative;
+    height:260px
+}
+.dbody {
+    padding:22px
+}
+.x {
+    position:absolute;
+    top:12px;
+    right:12px;
+    z-index:3;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    border:0;
+    background:rgba(0,0,0,.6);
+    color:#fff;
+    font-size:1.2rem;
+    cursor:pointer
+}
+.dbody form {
+    display:grid;
+    gap:12px
+}
+input,textarea {
+    padding:12px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:inherit;
+    font:inherit;
+    width:100%
+}
+.has-fields:has(input:invalid:not(:placeholder-shown)) .hint {
+    display:block
+}
+.hint {
+    display:none;
+    color:var(--c);
+    font-size:.9rem
+}
+/* accordion */
+.acc details {
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--card);
+    margin-bottom:12px;
+    overflow:hidden;
+    transition:background .3s
+}
+.acc summary {
+    padding:18px 22px;
+    cursor:pointer;
+    font-weight:600;
+    list-style:none;
+    display:flex;
+    justify-content:space-between
+}
+.acc summary::-webkit-details-marker {
+    display:none
+}
+.acc summary::after {
+    content:"+";
+    transition:transform .3s;
+    font-size:1.4rem;
+    line-height:1
+}
+.acc details[open] summary::after {
+    transform:rotate(135deg)
+}
+.acc details[open] {
+    background:color-mix(in srgb,var(--a) 14%,var(--card))
+}
+.acc .ans {
+    padding:0 22px 20px;
+    color:var(--muted);
+    animation:down .35s ease-out
+}
+@keyframes down {
+    from {
+        opacity:0;
+        transform:translateY(-10px)
+    }
+}
+.acc summary:focus-visible {
+    outline-offset:-3px
+}
+footer {
+    padding:40px 5vw;
+    text-align:center;
+    color:var(--muted);
+    border-top:1px solid var(--line)
+}
+/* scroll reveal */
+@supports (animation-timeline:view()) {
+    .reveal {
+        animation:rv linear both;
+        animation-timeline:view();
+        animation-range:entry 0% cover 30%
+    }
+    @keyframes rv {
+        from {
+            opacity:0;
+            transform:translateY(50px) scale(.96)
+        }
+    }
+}
+html.no-sdt .reveal {
+    opacity:0;
+    transform:translateY(50px) scale(.96);
+    transition:opacity .7s,transform .7s
+}
+html.no-sdt .reveal.in {
+    opacity:1;
+    transform:none
+}
+@media (prefers-reduced-motion:reduce) {
+    *,*::before,*::after {
+        animation:none!important;
+        transition:none!important;
+        scroll-behavior:auto!important
+    }
+    .hero h1 span {
+        opacity:1;
+        transform:none
+    }
+    .reveal {
+        opacity:1!important;
+        transform:none!important
+    }
+    .grad-text {
+        background-position:0 0
+    }
+    .work .cap {
+        transform:none
+    }
+    .px i {
+        transform:none
+    }
+}
+::view-transition-group(*) {
+    animation-duration:.4s
+}
+
+  </style>
+ </head>
+ <body>
+  <div class="bar" id="bar" role="presentation">
+  </div>
+  <header>
+   <div class="nav">
+    <a class="logo" href="#top">
+     <span class="grad-text">
+      Prism
+     </span>
+     Studio
+    </a>
+    <nav aria-label="Main" id="nav">
+     <button aria-controls="menu" aria-expanded="false" class="burger" id="burger">
+      Menu
+     </button>
+     <ul id="menu">
+      <li>
+       <a href="#products">
+        Products
+       </a>
+      </li>
+      <li>
+       <a href="#effects">
+        Effects
+       </a>
+      </li>
+      <li>
+       <a href="#work">
+        Portfolio
+       </a>
+      </li>
+      <li>
+       <a href="#faq">
+        FAQ
+       </a>
+      </li>
+      <li class="dd">
+       <button aria-haspopup="true">
+        More &dtrif;
+       </button>
+       <div class="menu">
+        <a href="#depth">
+         Parallax
+        </a>
+        <a href="#faq">
+         Accordion
+        </a>
+        <a data-modal="" href="#">
+         Contact
+        </a>
+       </div>
+      </li>
+     </ul>
+    </nav>
+   </div>
+  </header>
+  <main id="top">
+   <section class="hero">
+    <i class="blob b1">
+    </i>
+    <i class="blob b2">
+    </i>
+    <div>
+     <h1 aria-label="Design that moves, pops and glows">
+      <span style="--i:0">
+       Design
+      </span>
+      <span style="--i:1">
+       that
+      </span>
+      <span class="grad-text" style="--i:2">
+       moves,
+      </span>
+      <span style="--i:3">
+       pops
+      </span>
+      <span style="--i:4">
+       &amp;
+      </span>
+      <span style="--i:5">
+       glows.
+      </span>
+     </h1>
+     <p>
+      Prism Studio crafts product experiences with pure CSS: 3D depth, living gradients and scroll-driven motion, with no heavy libraries.
+     </p>
+     <div class="cta">
+      <a class="btn" href="#products">
+       Explore products
+      </a>
+      <a class="btn ghost" href="#work">
+       See our work
+      </a>
+     </div>
+    </div>
+    <div aria-hidden="true" class="orb">
+     <svg viewbox="0 0 300 300">
+      <defs>
+       <lineargradient id="g1" x1="0" x2="1" y1="0" y2="1">
+        <stop offset="0" stop-color="#7c5cff">
+        </stop>
+        <stop offset="1" stop-color="#ff5ca8">
+        </stop>
+       </lineargradient>
+       <lineargradient id="g2" x1="1" x2="0" y1="0" y2="1">
+        <stop offset="0" stop-color="#00e0c6">
+        </stop>
+        <stop offset="1" stop-color="#7c5cff">
+        </stop>
+       </lineargradient>
+      </defs>
+      <polygon fill="url(#g1)" points="150,20 270,90 270,210 150,280 30,210 30,90">
+      </polygon>
+      <polygon fill="#fff" opacity=".28" points="150,20 270,90 150,150 30,90">
+      </polygon>
+      <polygon fill="url(#g2)" opacity=".75" points="150,150 270,90 270,210 150,280">
+      </polygon>
+      <circle cx="150" cy="150" fill="#0b0b1a" opacity=".55" r="42">
+      </circle>
+      <circle cx="150" cy="150" fill="#fff" r="22">
+      </circle>
+     </svg>
+    </div>
+   </section>
+   <section id="products">
+    <div class="wrap">
+     <h2 class="reveal">
+      Featured
+      <span class="grad-text">
+       products
+      </span>
+     </h2>
+     <p class="lead reveal">
+      Move your pointer (or focus a card) to tilt it in 3D. Layers sit at different depths.
+     </p>
+     <div class="grid3">
+      <article class="card3d reveal" tabindex="0">
+       <span class="tag">
+        New
+       </span>
+       <div class="pic">
+        <div class="art" style="--h:260">
+        </div>
+       </div>
+       <div class="body">
+        <h3>
+         Nebula Lamp
+        </h3>
+        <p>
+         Ambient light with a slow colour drift.
+        </p>
+        <span class="price">
+         $89
+        </span>
+       </div>
+      </article>
+      <article class="card3d reveal" tabindex="0">
+       <span class="tag">
+        Popular
+       </span>
+       <div class="pic">
+        <div class="art" style="--h:170">
+        </div>
+       </div>
+       <div class="body">
+        <h3>
+         Aurora Speaker
+        </h3>
+        <p>
+         Room-filling sound in a pocket shape.
+        </p>
+        <span class="price">
+         $129
+        </span>
+       </div>
+      </article>
+      <article class="card3d reveal" tabindex="0">
+       <span class="tag">
+        Limited
+       </span>
+       <div class="pic">
+        <div class="art" style="--h:330">
+        </div>
+       </div>
+       <div class="body">
+        <h3>
+         Prism Watch
+        </h3>
+        <p>
+         Faceted glass, week-long battery.
+        </p>
+        <span class="price">
+         $219
+        </span>
+       </div>
+      </article>
+     </div>
+    </div>
+   </section>
+   <section id="effects">
+    <div class="wrap">
+     <h2 class="reveal">
+      Visual
+      <span class="grad-text">
+       effects
+      </span>
+      lab
+     </h2>
+     <p class="lead reveal">
+      Six techniques, zero image files.
+     </p>
+     <div class="fx">
+      <div class="glass reveal">
+       <span class="fx-lbl">
+        Glassmorphism
+       </span>
+       <div class="pane">
+        <h3>
+         Frosted pane
+        </h3>
+        <p>
+         backdrop-filter blur over a moving shape.
+        </p>
+       </div>
+      </div>
+      <div class="clip reveal">
+       <span class="fx-lbl">
+        clip-path
+       </span>
+       <h3>
+        Polygon cut
+       </h3>
+       <p>
+        A banner shape made from five points.
+       </p>
+      </div>
+      <div aria-label="Gradient dotted with a radial mask" class="mask reveal" role="img">
+      </div>
+      <div class="blend reveal">
+       <span class="fx-lbl">
+        Blend modes
+       </span>
+       <h3>
+        Difference
+       </h3>
+       <p>
+        background-blend-mode: multiply.
+       </p>
+      </div>
+      <div class="border reveal">
+       <span class="fx-lbl">
+        Animated border
+       </span>
+       <h3>
+        Conic ring
+       </h3>
+       <p>
+        An @property angle rotates the gradient.
+       </p>
+      </div>
+      <div class="reveal" style="background:var(--card);border:1px solid var(--line)">
+       <span class="fx-lbl">
+        Filters
+       </span>
+       <h3 class="grad-text">
+        Gradient text
+       </h3>
+       <p style="color:var(--muted)">
+        background-clip with a shifting gradient.
+       </p>
+      </div>
+     </div>
+    </div>
+   </section>
+   <section class="px" id="depth">
+    <i class="l1">
+    </i>
+    <i class="l2">
+    </i>
+    <i class="l3">
+    </i>
+    <h2>
+     Depth through
+     <span class="grad-text">
+      parallax
+     </span>
+    </h2>
+   </section>
+   <section id="work">
+    <div class="wrap">
+     <h2 class="reveal">
+      Selected
+      <span class="grad-text">
+       work
+      </span>
+     </h2>
+     <p class="lead reveal">
+      Filter by category (animated with the View Transitions API) and open any project in the lightbox.
+     </p>
+     <div aria-label="Filter projects" class="filters" role="group">
+      <button aria-pressed="true" class="chip" data-f="all">
+       All
+      </button>
+      <button aria-pressed="false" class="chip" data-f="Branding">
+       Branding
+      </button>
+      <button aria-pressed="false" class="chip" data-f="Web">
+       Web
+      </button>
+      <button aria-pressed="false" class="chip" data-f="Motion">
+       Motion
+      </button>
+     </div>
+     <div class="gallery" id="gal">
+      <button class="work" data-c="Branding" style="view-transition-name:w1">
+       <div class="art" style="--h:20">
+       </div>
+       <div class="cap">
+        <small>
+         Branding
+        </small>
+        <b>
+         Ember Coffee
+        </b>
+        <span class="d">
+         Identity system for a roastery.
+        </span>
+       </div>
+      </button>
+      <button class="work" data-c="Web" style="view-transition-name:w2">
+       <div class="art" style="--h:200">
+       </div>
+       <div class="cap">
+        <small>
+         Web
+        </small>
+        <b>
+         Tidal Bank
+        </b>
+        <span class="d">
+         Responsive banking dashboard.
+        </span>
+       </div>
+      </button>
+      <button class="work" data-c="Motion" style="view-transition-name:w3">
+       <div class="art" style="--h:290">
+       </div>
+       <div class="cap">
+        <small>
+         Motion
+        </small>
+        <b>
+         Orbit Launch
+        </b>
+        <span class="d">
+         Product reveal animation.
+        </span>
+       </div>
+      </button>
+      <button class="work" data-c="Web" style="view-transition-name:w4">
+       <div class="art" style="--h:120">
+       </div>
+       <div class="cap">
+        <small>
+         Web
+        </small>
+        <b>
+         Fern Market
+        </b>
+        <span class="d">
+         Plant shop storefront.
+        </span>
+       </div>
+      </button>
+      <button class="work" data-c="Branding" style="view-transition-name:w5">
+       <div class="art" style="--h:330">
+       </div>
+       <div class="cap">
+        <small>
+         Branding
+        </small>
+        <b>
+         Pulse Fitness
+        </b>
+        <span class="d">
+         Logo, colour and app icon.
+        </span>
+       </div>
+      </button>
+      <button class="work" data-c="Motion" style="view-transition-name:w6">
+       <div class="art" style="--h:60">
+       </div>
+       <div class="cap">
+        <small>
+         Motion
+        </small>
+        <b>
+         Sunset FM
+        </b>
+        <span class="d">
+         Looping radio-station visuals.
+        </span>
+       </div>
+      </button>
+     </div>
+    </div>
+   </section>
+   <section id="faq">
+    <div class="wrap acc">
+     <h2 class="reveal">
+      Questions,
+      <span class="grad-text">
+       answered
+      </span>
+     </h2>
+     <p class="lead reveal">
+      Built with native &lt;details&gt;, so it works by keyboard out of the box.
+     </p>
+     <details class="reveal" name="faq">
+      <summary>
+       Do the effects hurt performance?
+      </summary>
+      <div class="ans">
+       Motion sticks to transform and opacity, blur is used sparingly, and will-change appears only on tilting cards.
+      </div>
+     </details>
+     <details class="reveal" name="faq">
+      <summary>
+       What if a browser lacks scroll-driven animations?
+      </summary>
+      <div class="ans">
+       @supports gates the CSS version; a small IntersectionObserver and scroll listener provide the fallback.
+      </div>
+     </details>
+     <details class="reveal" name="faq">
+      <summary>
+       Is it accessible?
+      </summary>
+      <div class="ans">
+       Focus states are visible, everything is keyboard reachable, and prefers-reduced-motion switches movement off.
+      </div>
+     </details>
+     <p style="text-align:center;margin-top:32px">
+      <button class="btn" data-modal="">
+       Start a project
+      </button>
+     </p>
+    </div>
+   </section>
+  </main>
+  <footer>
+   &copy; 2026 Prism Studio &middot; Made with CSS
+  </footer>
+  <dialog aria-labelledby="lbT" id="lb">
+   <button aria-label="Close" class="x" data-close="">
+    ✕
+   </button>
+   <div class="pic">
+    <div class="art" id="lbA">
+    </div>
+   </div>
+   <div class="dbody">
+    <small id="lbC">
+    </small>
+    <h3 id="lbT" style="margin:4px 0">
+    </h3>
+    <p id="lbD" style="color:var(--muted);margin:0">
+    </p>
+   </div>
+  </dialog>
+  <dialog aria-labelledby="mdT" id="md">
+   <button aria-label="Close" class="x" data-close="">
+    ✕
+   </button>
+   <div class="dbody has-fields">
+    <h3 id="mdT" style="margin-top:0">
+     Start a project
+    </h3>
+    <form method="dialog">
+     <input aria-label="Your email" placeholder=" " required="" type="email"/>
+     <span class="hint">
+      Please enter a valid email.
+     </span>
+     <textarea aria-label="Project details" placeholder="Tell us about your idea" rows="3"></textarea>
+     <button class="btn">
+      Send
+     </button>
+    </form>
+   </div>
+  </dialog>
+  <script>
+   
+(function() {
+    var d=document,root=d.documentElement,rm=matchMedia('(prefers-reduced-motion: reduce)'); var sdt=CSS.supports('animation-timeline: scroll()'); function tryS(f) {
+        try {
+            f()
+        }
+        catch(e) {
+        }
+    }
+    if(!sdt) {
+        root.classList.add('no-sdt');  var io=new IntersectionObserver(function(es) {
+            es.forEach(function(e) {
+                if(e.isIntersecting) {
+                    e.target.classList.add('in');io.unobserve(e.target)
+                }
+            }
+            )
+        }
+        , {
+            threshold:.15
+        }
+        );  d.querySelectorAll('.reveal').forEach(function(el) {
+            io.observe(el)
+        }
+        );  var tick=0;addEventListener('scroll',function() {
+            if(tick)return;tick=requestAnimationFrame(function() {
+                tick=0;var m=root.scrollHeight-innerHeight;root.style.setProperty('--p',m>0?scrollY/m:0);var p=d.getElementById('depth').getBoundingClientRect();root.style.setProperty('--sy',p.top-innerHeight/2)
+            }
+            )
+        }
+        , {
+            passive:true
+        }
+        );  dispatchEvent(new Event('scroll'));
+    }
+    /* 3D tilt */
+    d.querySelectorAll('.card3d').forEach(function(c) {
+        c.addEventListener('pointermove',function(e) {
+            if(rm.matches)return;var r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;c.style.setProperty('--ry',(x*18)+'deg');c.style.setProperty('--rx',(-y*18)+'deg')
+        }
+        );  c.addEventListener('pointerleave',function() {
+            c.style.setProperty('--rx','0deg');c.style.setProperty('--ry','0deg')
+        }
+        );  c.addEventListener('keydown',function(e) {
+            var k= {
+                ArrowLeft:[0,-10],ArrowRight:[0,10],ArrowUp:[10,0],ArrowDown:[-10,0]
+            }
+            [e.key];if(k&&!rm.matches) {
+                c.style.setProperty('--rx',k[0]+'deg');c.style.setProperty('--ry',k[1]+'deg')
+            }
+        }
+        );  c.addEventListener('blur',function() {
+            c.style.setProperty('--rx','0deg');c.style.setProperty('--ry','0deg')
+        }
+        );
+    }
+    );
+    /* nav */
+    var nav=d.getElementById('nav'),bg=d.getElementById('burger'); bg.addEventListener('click',function() {
+        var o=nav.classList.toggle('open');bg.setAttribute('aria-expanded',o)
+    }
+    ); nav.addEventListener('click',function(e) {
+        if(e.target.closest('a')) {
+            nav.classList.remove('open');bg.setAttribute('aria-expanded',false)
+        }
+    }
+    );
+    /* gallery filter with View Transitions */
+    var chips=d.querySelectorAll('.chip'),works=d.querySelectorAll('.work'); chips.forEach(function(ch) {
+        ch.addEventListener('click',function() {
+            var f=ch.dataset.f;  var apply=function() {
+                chips.forEach(function(c) {
+                    c.setAttribute('aria-pressed',c===ch)
+                }
+                );works.forEach(function(w) {
+                    w.hidden=!(f==='all'||w.dataset.c===f)
+                }
+                )
+            }
+            ;  if(d.startViewTransition&&!rm.matches)d.startViewTransition(apply);else apply();
+        }
+        )
+    }
+    );
+    /* lightbox + modal */
+    var lb=d.getElementById('lb'),md=d.getElementById('md'); works.forEach(function(w) {
+        w.addEventListener('click',function() {
+            var a=w.querySelector('.art');d.getElementById('lbA').style.cssText=a.getAttribute('style');  d.getElementById('lbC').textContent=w.dataset.c;d.getElementById('lbT').textContent=w.querySelector('b').textContent;d.getElementById('lbD').textContent=w.querySelector('.d').textContent+' Press Esc to close.';  lb.showModal()
+        }
+        )
+    }
+    ); d.querySelectorAll('[data-modal]').forEach(function(b) {
+        b.addEventListener('click',function(e) {
+            e.preventDefault();md.showModal()
+        }
+        )
+    }
+    ); [lb,md].forEach(function(dl) {
+        dl.addEventListener('click',function(e) {
+            if(e.target===dl||e.target.closest('[data-close]'))dl.close()
+        }
+        )
+    }
+    );
+}
+)();
+
+  </script>
+ </body>
+</html>
